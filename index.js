@@ -1,11 +1,12 @@
 var _ = require('underscore'),
     colors = require('colors'),
     Promise = require('bluebird'),
+    request = require('request'),
     sonos = require('sonos'),
 
     argv = require('minimist')(process.argv.slice(2), {
       default: {
-        apiUrl: 'https://slack.com/api/',
+        apiUrl: 'https://slack.com/api',
         pollInterval: 1000
       }
     }),
@@ -29,16 +30,50 @@ success = log.bind(this, 'green');
 error = log.bind(this, 'red');
 
 function scrobble (track) {
-  request.post({
-    url: argv.apiUrl + '/channels.setTopic',
-    form: {
-      token: argv.token,
-      channel: channel.match(/^#/) ? channel : '#' + channel,
-      topic: track.artist + ' - ' + track.title
-    }
-  }, function (err) {
-    err && error(err);
+  getChannelId(argv.channel)
+    .then(function (channelId) {
+      return apiRequest('channels.setTopic', {
+        channel: channelId,
+        topic: track.artist + ' - ' + track.title
+      });
+    })
+    .catch(error);
+}
+
+function apiRequest (resource, args) {
+  return new Promise(function (resolve, reject) {
+    args.token = argv.token;
+
+    request.post({
+      url: argv.apiUrl + '/' + resource,
+      form: args
+    }, function (err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return reject(e);
+      }
+
+      if (body.error) {
+        return reject(body.error);
+      }
+
+      resolve(body);
+    });
   });
+}
+
+function getChannelId (channelName) {
+  channelName = channelName.match(/^#/) ? channelName.slice(1) : channelName;
+
+  return apiRequest('channels.list', { exclude_archived: 1 })
+    .then(function (resp) {
+      return _.findWhere(resp.channels, { name: channelName }).id;
+    });
 }
 
 // This sonos node lib does not handle multiple devices very well.
