@@ -1,0 +1,27 @@
+{
+  "name": "slack-sonos-scrobbler",
+  "description": "Scrobble your local Sonos queue to a Slack channel.",
+  "version": "0.1.0",
+  "author": "Josh Everett",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josheverett/slack-sonos-scrobbler"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "slack",
+    "sonos",
+    "scrobble"
+  ],
+  "dependencies": {
+    "bluebird": "2.9.x",
+    "colors": "1.1.x",
+    "minimist": "1.1.x",
+    "request": "2.57.0",
+    "sonos": "0.8.x",
+    "underscore": "1.8.x"
+  }
+}
