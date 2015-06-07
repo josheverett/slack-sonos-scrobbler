@@ -2,6 +2,8 @@
 
 Scrobble your local Sonos queue to a Slack channel.
 
+![Example](http://i.imgur.com/bz8dqjQ.png)
+
 ## Usage
 
 Create a bot integration and give it a name. I suggest Scrobbler Bot. Be sure
