@@ -82,7 +82,7 @@ function getMasterDevice () {
 
   return new Promise(function (resolve, reject) {
     sonos.search(function (device) {
-      device.deviceDescriptionAsync
+      device.deviceDescriptionAsync()
         .then(device.currentTrackAsync)
         .then(function (track) {
           if (!isNaN(track.duration)) {
