@@ -82,8 +82,7 @@ function getMasterDevice () {
 
   return new Promise(function (resolve, reject) {
     sonos.search(function (device) {
-      device.deviceDescriptionAsync()
-        .then(device.currentTrackAsync)
+      device.currentTrackAsync()
         .then(function (track) {
           if (!isNaN(track.duration)) {
             success('Master device found.');
@@ -95,11 +94,8 @@ function getMasterDevice () {
   });
 }
 
-function checkCurrentTrack () {
-  return getMasterDevice()
-    .then(function (device) {
-      return device.currentTrackAsync();
-    })
+function checkCurrentTrack (device) {
+  device.currentTrackAsync()
     .then(function (track) {
       if (!track) {
         return error('Could not find current track!');
@@ -109,17 +105,19 @@ function checkCurrentTrack () {
         return;
       }
 
-      info('New track!', track.title);
+      success('New track!', track.title);
       currentTrack = track;
       scrobble(track);
     });
 }
 
-function startTrackPoller () {
+function startTrackPoller (device) {
+  var boundCheckCurrentTrack = checkCurrentTrack.bind(null, device);
+
   info('Starting track poller...');
 
-  checkCurrentTrack();
-  setInterval(checkCurrentTrack, argv.pollInterval);
+  boundCheckCurrentTrack();
+  setInterval(boundCheckCurrentTrack, argv.pollInterval);
 }
 
 getMasterDevice()

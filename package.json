@@ -1,7 +1,7 @@
 {
   "name": "slack-sonos-scrobbler",
   "description": "Scrobble your local Sonos queue to a Slack channel.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Josh Everett",
   "license": "MIT",
   "repository": {
